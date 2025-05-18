@@ -1,1 +1,45 @@
+name: CI-CD Pipeline
+on:
+  push: 
+    branches:
+    - master
 
+env:
+  ECR_REGISTRY: 713881790523.dkr.ecr.us-east-1.amazonaws.com
+  ECR_REPOSITORY: to-do-app
+  IMAGE_TAG: ${{ github.sha }}
+
+permissions:
+ id-token: write
+ contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with: 
+        role-to-assume: arn:aws:iam::713881790523:role/To-Do-OIDC
+        aws-region: us-east-1
+    - name: Login to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v2
+    - name: Build and push Docker image
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - name: Generate ECS task definition with new image
+      run: |
+          sed "s|<IMAGE_URI>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" task-def-template.json > my-task-def.json
+          
+    - name: Deploy to Amazon ECS
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: my-task-def.json
+        service: my-ecs-service
+        cluster: my-ecs-cluster
+        wait-for-service-stability: true
+        
+      
