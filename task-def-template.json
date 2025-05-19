@@ -1,0 +1,16 @@
+{
+  "family": "my-task-def",
+  "containerDefinitions": [
+    {
+      "name": "to-do",
+      "image": "<IMAGE_URI>",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80
+        }
+      ]
+    }
+  ]
+}
