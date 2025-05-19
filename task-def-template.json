@@ -1,5 +1,6 @@
 {
   "family": "my-task-def",
+  "executionRoleArn": "arn:aws:iam::713881790523:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
