@@ -7,7 +7,7 @@
   "containerDefinitions": [
     {
       "name": "to-do",
-      "image": "<IMAGE_URI",
+      "image": "<IMAGE_URI>",
       "essential": true,
       "portMappings": [
         {
